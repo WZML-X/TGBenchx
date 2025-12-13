@@ -29,7 +29,7 @@ jobs:
         run: |
           echo "Beginning Telethon test"
           mkdir -p out
-          pip install --no-cache-dir --force-reinstall --upgrade Telethon cryptg==0.5.0.post0 > /dev/null 2>&1
+          pip install --no-cache-dir --force-reinstall --upgrade Telethon cryptg==0.5.2 > /dev/null 2>&1
           T=$(python src/telethon/main.py)
           pip uninstall -y telethon cryptg > /dev/null 2>&1
           echo "${T}" > out/telethon.json

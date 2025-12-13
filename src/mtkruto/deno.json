@@ -1,5 +1,5 @@
 {
   "imports": {
-    "@mtkruto/mtkruto": "jsr:@mtkruto/mtkruto@^0.64.0"
+    "@mtkruto/mtkruto": "jsr:@mtkruto/mtkruto@^0.77.1"
   }
 }

@@ -1,6 +1,8 @@
 module main
 
-go 1.23.2
+go 1.24.0
+
+toolchain go1.24.3
 
 require (
 	github.com/amarnathcjd/gogram v1.5.10-0.20250529173212-7a09a34ffa08
@@ -9,5 +11,5 @@ require (
 
 require (
 	github.com/pkg/errors v0.9.1 // indirect
-	golang.org/x/net v0.38.0 // indirect
+	golang.org/x/net v0.48.0 // indirect
 )
