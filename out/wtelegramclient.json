@@ -1,17 +1,17 @@
 {
-  "version": "4.3.4",
-  "layer": 201,
-  "file_size": 2097152000,
+  "version": "4.3.14",
+  "layer": 216,
+  "file_size": 2096024840,
   "download": {
-    "start_time": 1748223477.616,
-    "end_time": 1748223596.219,
-    "time_taken": 118.6038338,
-    "avg_speed": "16.86 MB/s"
+    "start_time": 1765730442.238,
+    "end_time": 1765730955.315,
+    "time_taken": 513.0775607,
+    "avg_speed": "3.90 MB/s"
   },
   "upload": {
-    "start_time": 1748223596.219,
-    "end_time": 1748223791.279,
-    "time_taken": 195.0593321,
-    "avg_speed": "10.25 MB/s"
+    "start_time": 1765730955.315,
+    "end_time": 1765731799.523,
+    "time_taken": 844.207499,
+    "avg_speed": "2.37 MB/s"
   }
 }
