@@ -72,7 +72,10 @@ async def main():
     print(dumps(d, indent=2))
 
 
-# We need a loop to work with
-loop = asyncio.get_event_loop()
-# Then, we need to run the loop with a task
-loop.run_until_complete(main())
+if __name__ == "__main__":
+    try:
+        import uvloop
+        uvloop.install()
+    except ImportError:
+        pass
+    asyncio.run(main())
