@@ -59,30 +59,42 @@ func main() {
 
 	client, _ := tg.NewClient(cfg)
 	client.LoginBot(BOT_TOKEN)
-	messageId, _ := strconv.Atoi(strings.Split(MESSAGE_LINK, "/")[4])
-	message, _ := client.GetMessageByID(strings.Split(MESSAGE_LINK, "/")[3], int32(messageId))
 
-	var prog = tg.NewProgressManager(2)
-	var peakSpeed int64 = 0
-	var startTime int64 = time.Now().Unix()
-	var fileSize int64 = message.File.Size
+	parts := strings.Split(MESSAGE_LINK, "/")
+	chat := parts[3]
+	messageId, _ := strconv.Atoi(parts[4])
 
-	prog.Edit(func(totalSize, currentSize int64) {
-		if time.Now().Unix()-startTime == 0 {
-			return
-		}
-		var currSpeed = currentSize / (time.Now().Unix() - startTime)
-		if currSpeed > peakSpeed {
-			peakSpeed = currSpeed
-		}
-	})
+	message, _ := client.GetMessageByID(chat, int32(messageId))
+
+	fileSize := message.File.Size
+
+	// ----- Download logic -----
+	var peakSpeed int64
+	startTime := time.Now().Unix()
+
+	var pmDownload *tg.ProgressManager
 
 	downloaded, _ := message.Download(&tg.DownloadOptions{
-		ProgressManager: prog,
+		Progress: func(current, total int64) {
+			if pmDownload == nil {
+				pmDownload = tg.NewProgressManager(int(total), 3)
+			}
+			if pmDownload.ShouldEdit(int(current)) {
+				stats := pmDownload.GetStats(int(current))
+				fmt.Println(stats) // or send as client.EditMessage
+			}
+
+			if time.Now().Unix()-startTime > 0 {
+				speed := current / (time.Now().Unix() - startTime)
+				if speed > peakSpeed {
+					peakSpeed = speed
+				}
+			}
+		},
 	})
 	defer os.Remove(downloaded)
 
-	var avgSpeed = float64(fileSize) / float64(time.Now().Unix()-startTime)
+	avgSpeed := float64(fileSize) / float64(time.Now().Unix()-startTime)
 
 	benchmark.Download = Entry{
 		PeakSpeed: HumanizeBytes(peakSpeed) + "/s",
@@ -92,27 +104,32 @@ func main() {
 		EndTime:   time.Now().Unix(),
 	}
 
-	prog = tg.NewProgressManager(2)
-	peakSpeed = 0
+	// ----- Upload logic -----
 	startTime = time.Now().Unix()
-	fileSize = message.File.Size
+	peakSpeed = 0
 
-	prog.Edit(func(totalSize, currentSize int64) {
-		if time.Now().Unix()-startTime == 0 {
-			return
-		}
-		var currSpeed = currentSize / (time.Now().Unix() - startTime)
-		if currSpeed > peakSpeed {
-			peakSpeed = currSpeed
-		}
-	})
+	var pmUpload *tg.ProgressManager
 
 	client.SendMedia(message.Chat, downloaded, &tg.MediaOptions{
-		ProgressManager: prog,
-		ForceDocument:   true,
-		ReplyID:         message.ID,
-		Caption:         "gogram",
-		Attributes:      message.Document().Attributes,
+		Progress: func(current, total int64) {
+			if pmUpload == nil {
+				pmUpload = tg.NewProgressManager(int(total), 3)
+			}
+			if pmUpload.ShouldEdit(int(current)) {
+				stats := pmUpload.GetStats(int(current))
+				fmt.Println(stats) // or client.EditMessage
+			}
+			if time.Now().Unix()-startTime > 0 {
+				speed := current / (time.Now().Unix() - startTime)
+				if speed > peakSpeed {
+					peakSpeed = speed
+				}
+			}
+		},
+		ForceDocument: true,
+		ReplyID:       message.ID,
+		Caption:       "gogram",
+		Attributes:    message.Document().Attributes,
 	})
 
 	avgSpeed = float64(fileSize) / float64(time.Now().Unix()-startTime)
