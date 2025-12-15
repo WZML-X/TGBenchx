@@ -3,15 +3,15 @@
   "layer": 216,
   "file_size": 2096024840,
   "download": {
-    "start_time": 1765730442.238,
-    "end_time": 1765730955.315,
-    "time_taken": 513.0775607,
-    "avg_speed": "3.90 MB/s"
+    "start_time": 1765765300.264,
+    "end_time": 1765765899.39,
+    "time_taken": 599.1262184,
+    "avg_speed": "3.34 MB/s"
   },
   "upload": {
-    "start_time": 1765730955.315,
-    "end_time": 1765731799.523,
-    "time_taken": 844.207499,
-    "avg_speed": "2.37 MB/s"
+    "start_time": 1765765899.39,
+    "end_time": 1765766492.231,
+    "time_taken": 592.84082,
+    "avg_speed": "3.37 MB/s"
   }
 }
