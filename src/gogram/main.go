@@ -59,9 +59,21 @@ func main() {
 	client, _ := tg.NewClient(cfg)
 	client.LoginBot(BOT_TOKEN)
 
-	parts := strings.Split(MESSAGE_LINK, "/")
-	chat := parts[3]
-	msgID, _ := strconv.Atoi(parts[4])
+	// Flexible parsing for t.me/c/ID/MSG_ID (private) vs t.me/User/MSG_ID (public)
+	parts := strings.Split(strings.TrimSuffix(strings.TrimSpace(MESSAGE_LINK), "/"), "/")
+	var chat interface{}
+	var msgID int
+
+	if len(parts) >= 3 && parts[len(parts)-3] == "c" {
+		idStr := parts[len(parts)-2]
+		msgID, _ = strconv.Atoi(parts[len(parts)-1])
+
+		cid, _ := strconv.ParseInt("-100"+idStr, 10, 64)
+		chat = cid
+	} else {
+		chat = parts[len(parts)-2]
+		msgID, _ = strconv.Atoi(parts[len(parts)-1])
+	}
 
 	message, _ := client.GetMessageByID(chat, int32(msgID))
 	fileSize := message.File.Size
@@ -84,10 +96,8 @@ func main() {
 		EndTime:   time.Now().Unix(),
 	}
 
-	// Upload progress
 	start = time.Now().Unix()
 
-	// Upload logic
 	_, err = client.SendMedia(message.Chat, downloaded, &tg.MediaOptions{
 		ForceDocument: true,
 		ReplyID:       message.ID,

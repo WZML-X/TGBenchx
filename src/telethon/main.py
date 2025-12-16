@@ -44,11 +44,17 @@ async def main():
         d["layer"] = LAYER
         await app.start(bot_token=BOT_TOKEN)
 
-        _, _, _, chat_id, s_message_id = MESSAGE_LINK.split("/")
+        # Flexible parsing for t.me/c/ID/MSG_ID (private) vs t.me/User/MSG_ID (public)
+        parts = MESSAGE_LINK.strip().rstrip("/").split("/")
+        if len(parts) >= 3 and parts[-3] == "c":
+            chat_id = int("-100" + parts[-2])
+            s_message_id = int(parts[-1])
+        else:
+            chat_id = parts[-2]
+            s_message_id = int(parts[-1])
 
         t1 = datetime.now()
-        # Telethon's get_messages can take a list of ids or a single id
-        message = await app.get_messages(entity=int(chat_id), ids=int(s_message_id))
+        message = await app.get_messages(entity=chat_id, ids=int(s_message_id))
         d["file_size"] = message.file.size
         t2 = datetime.now()
         filename = await message.download_media()

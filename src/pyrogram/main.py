@@ -42,7 +42,16 @@ async def main():
         d["version"] = __version__
         d["layer"] = layer
 
-        _, _, _, chat_id, s_message_id = MESSAGE_LINK.split("/")
+        # Flexible parsing for t.me/c/ID/MSG_ID (private) vs t.me/User/MSG_ID (public)
+        parts = MESSAGE_LINK.strip().rstrip("/").split("/")
+        if len(parts) >= 3 and parts[-3] == "c":
+            # Private chat/channel: t.me/c/12345/67 -> chat_id="-10012345"
+            chat_id = int("-100" + parts[-2])
+            s_message_id = int(parts[-1])
+        else:
+            # Public chat: t.me/username/67 -> chat_id="username"
+            chat_id = parts[-2]
+            s_message_id = int(parts[-1])
 
         t1 = datetime.now()
         message = await app.get_messages(chat_id=chat_id, message_ids=int(s_message_id))
